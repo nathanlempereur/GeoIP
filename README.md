@@ -19,7 +19,11 @@ Il génère un tableau coloré avec la provenance de chaque IP et fournit un ré
 * **Flexible :** Vous pouvez changer la liste cible (Deny, Blocklist, etc.) directement dans le script.
 
 <img width="595" height="551" alt="image" src="https://github.com/user-attachments/assets/bf6f913c-3ee3-49ee-95fa-4fc34eb251b3" />
-<img width="399" height="937" alt="image" src="https://github.com/user-attachments/assets/401504f1-3d7c-4679-b6e3-96f193c1a5ca" />
+
+<img width="329" height="691" alt="image" src="https://github.com/user-attachments/assets/c8616556-83df-4a62-805d-4becbe80a082" />
+
+<img width="500" height="482" alt="image" src="https://github.com/user-attachments/assets/542413c0-10a1-4428-bb32-f75c1d276383" />
+
 
 ---
 
