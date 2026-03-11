@@ -1,0 +1,60 @@
+# GeoIP - IPSet Analyzer
+
+![Bash](https://img.shields.io/badge/Language-Bash-4EAA25.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Status](https://img.shields.io/badge/status-Libre-orange)
+
+**GeoIP** est un outil en ligne de commande permettant d'analyser et de géolocaliser instantanément toutes les adresses IP contenues dans une liste `ipset` (comme une liste de bannissement `Deny`). 
+
+Il génère un tableau coloré avec la provenance de chaque IP et fournit un résumé statistique des pays les plus représentés.
+
+---
+
+## Caractéristiques
+
+* **Analyse Locale :** Utilise la base de données `geoip-bin`, donc aucune requête API externe n'est envoyée (pas de limite de débit).
+* **Design Terminal :** Intégration de `Figlet` pour un logo stylisé et gestion des couleurs ANSI.
+* **Statistiques Automatiques :** Classe les pays par volume d'adresses IP détectées.
+* **Installation Intelligente :** Vérifie et installe automatiquement les dépendances manquantes (`figlet`, `geoip-bin`).
+* **Flexible :** Vous pouvez changer la liste cible (Deny, Blocklist, etc.) directement dans le script.
+
+---
+
+## Installation
+
+1. **Clonez le dépôt :**
+   ```bash
+   git clone [https://github.com/votre-utilisateur/GeoIP-IPSet-Analyzer.git](https://github.com/nathanlempereur/GeoIP.git)
+   cd GeoIP
+   ```
+   
+2. **Rendez le script exécutable :**
+   ```bash
+   chmod +x geoip_analyzer.sh
+   ```
+3. ***Prérequis :*** Le script nécessite que ipset soit déjà installé et configuré sur votre machine. Pour l'installer sur Debian/Ubuntu :
+
+---
+
+## Utilisation
+
+Lancez simplement le script avec les privilèges nécessaires pour lire vos listes ipset 
+
+---
+
+## Contribution & Licence
+
+Ce script est **open-source**. Vous pouvez le modifier et proposer des améliorations via des **Pull Requests**.
+
+**Licence** : Ce projet est sous licence libre. 
+**Contact** : contact@nlempereur.ovh
+
+---
+
+### Contact
+- Email : **contact@nlempereur.ovh**
+- Site web : https://nlempereur.ovh/contact.php
+
+---
+
+Merci d'utiliser **GeoIP** ! 🚀
