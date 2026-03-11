@@ -30,7 +30,7 @@ Il génère un tableau coloré avec la provenance de chaque IP et fournit un ré
    
 2. **Rendez le script exécutable :**
    ```bash
-   chmod +x geoip_analyzer.sh
+   chmod +x GeoIP.sh
    ```
 3. ***Prérequis :*** Le script nécessite que ipset soit déjà installé et configuré sur votre machine. Pour l'installer sur Debian/Ubuntu :
 
