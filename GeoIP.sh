@@ -12,7 +12,7 @@ LISTE_CIBLE="Deny"
 # Titre stylisé pour l'affichage
 TITRE="GeoIP"
 
-# COULEURS (Codes ANSI pour le rendu terminal)
+# COULEURS
 CYAN='\033[0;36m'
 OR='\033[0;33m'
 BLANC='\033[1;37m'
