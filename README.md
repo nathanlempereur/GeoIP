@@ -38,7 +38,7 @@ Il génère un tableau coloré avec la provenance de chaque IP et fournit un ré
 
 ## Utilisation
 
-Lancez simplement le script avec les privilèges nécessaires pour lire vos listes ipset 
+Lancez simplement le script en root pour lire vos listes ipset ou mettez la commande 'sudo' sur les lignes qui le requirent.
 
 ---
 
