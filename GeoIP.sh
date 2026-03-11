@@ -2,15 +2,14 @@
 
 # ==============================================================================
 # NOM DU SCRIPT : GeoIP.sh
-# DESCRIPTION    : Analyse et géolocalise les adresses IP d'une liste IPSet.
-# VERSION        : 1.0
+# DESCRIPTION    : Analyse IPSet + Géolocalisation + Ports visés (Syslog)
+# VERSION        : 1.3
 # ==============================================================================
 
 # --- CONFIGURATION ---
-# Nom de la liste ipset que vous souhaitez analyser
 LISTE_CIBLE="Deny"
-# Titre stylisé pour l'affichage
 TITRE="GeoIP"
+LOG_FILE="/var/log/syslog"
 
 # COULEURS
 CYAN='\033[0;36m'
@@ -19,15 +18,10 @@ BLANC='\033[1;37m'
 RESET='\033[0m'
 
 # --- VÉRIFICATION DES DÉPENDANCES ---
-# Le script installe les outils manquants automatiquement (nécessite sudo)
 for outil in figlet geoiplookup; do
     if ! command -v $outil &> /dev/null; then
-        echo -e "${OR}[!] Outil manquant : $outil. Installation en cours...${RESET}"
-        if [ "$outil" == "geoiplookup" ]; then
-            apt-get update && apt-get install geoip-bin -y &> /dev/null
-        else
-            apt-get update && apt-get install $outil -y &> /dev/null
-        fi
+        echo -e "${OR}[!] Outil manquant : $outil. Installation...${RESET}"
+        sudo apt-get update && sudo apt-get install geoip-bin figlet -y &> /dev/null
     fi
 done
 
@@ -38,59 +32,67 @@ echo -e "${CYAN}"
 figlet "$TITRE"
 echo -e "${RESET}"
 
-# Récupération du nombre total d'entrées dans IPSet
 nb_ip=$(ipset list "$LISTE_CIBLE" 2>/dev/null | grep "Number of entries" | awk '{print $4}')
 
-# Sécurité : arrêt du script si la liste n'existe pas ou est inaccessible
-if [ -z "$nb_ip" ]; then
-    echo -e "${OR}[!] Erreur : Impossible de lire la liste '$LISTE_CIBLE'.${RESET}"
-    echo -e "${OR}[?] Vérifiez que la liste existe avec la commande : ipset list${RESET}"
+if [ -z "$nb_ip" ] || [ "$nb_ip" -eq 0 ]; then
+    echo -e "${OR}[!] Erreur : La liste '$LISTE_CIBLE' est vide ou inexistante.${RESET}"
     exit 1
 fi
 
-echo -e "${OR}==========================================${RESET}"
-echo -e "${BLANC}   ANALYSE DE LA LISTE : ${LISTE_CIBLE}${RESET}"
-echo -e "${OR}==========================================${RESET}"
+echo -e "${OR}============================================================${RESET}"
+echo -e "${BLANC}   ANALYSE : ${LISTE_CIBLE} | SOURCE : ${LOG_FILE}${RESET}"
+echo -e "${OR}============================================================${RESET}"
 echo -e "${CYAN}Total d'adresses détectées : ${BLANC}$nb_ip${RESET}\n"
 
-# En-tête du tableau de résultats
-printf "${BLANC}%-20s | %-20s${RESET}\n" "ADRESSE IP" "PAYS D'ORIGINE"
-echo "------------------------------------------"
+# En-tête du tableau (3 colonnes maintenant)
+printf "${BLANC}%-18s | %-18s | %-10s${RESET}\n" "ADRESSE IP" "PAYS" "PORT VISÉ"
+echo "------------------------------------------------------------"
 
 liste_pays_brute=""
+liste_ports_brute=""
 
-# Extraction des IPs : on cible les lignes après le mot "Members:"
-ips_extraites=$(ipset list "$LISTE_CIBLE" | tail -n $nb_ip)
+# Extraction des IPs
+ips_extraites=$(ipset list "$LISTE_CIBLE" | tail -n "$nb_ip")
 
 for adresse in $ips_extraites; do
-    # Localisation via la base de données locale geoip-bin
-    # On utilise awk pour extraire uniquement le nom complet du pays
+    # 1. Géolocalisation
     pays_detecte=$(geoiplookup "$adresse" | awk -F', ' '{print $2}')
+    [ -z "$pays_detecte" ] || [[ "$pays_detecte" == *"not found"* ]] && pays_detecte="Inconnu"
 
-    # Gestion des adresses inconnues ou privées (ex: 192.168.x.x)
-    if [ -z "$pays_detecte" ] || [[ "$pays_detecte" == *"not found"* ]]; then
-        pays_detecte="Inconnu / Privé"
-    fi
+    # 2. Extraction du Port via Syslog
+    # On cherche l'IP, on prend la dernière occurrence, et on isole le port après "port:"
+    port_detecte=$(grep "$adresse" "$LOG_FILE" | grep "port:" | tail -n 1 | awk -F'port: ' '{print $2}')
+    [ -z "$port_detecte" ] && port_detecte="?"
 
-    # Affichage de la ligne courante
-    printf "${CYAN}%-20s${RESET} | ${BLANC}%-20s${RESET}\n" "$adresse" "$pays_detecte"
-    
-    # Stockage pour le calcul des statistiques
+    # Affichage
+    printf "${CYAN}%-18s${RESET} | ${BLANC}%-18s${RESET} | ${OR}%-10s${RESET}\n" "$adresse" "$pays_detecte" "$port_detecte"
+
+    # Accumulation pour les stats
     liste_pays_brute+="$pays_detecte\n"
+    [[ "$port_detecte" != "?" ]] && liste_ports_brute+="$port_detecte\n"
 done
 
-echo -e "${OR}------------------------------------------${RESET}"
+echo -e "${OR}------------------------------------------------------------${RESET}"
 
-# --- SECTION STATISTIQUES GLOBALES ---
+# --- SECTION STATISTIQUES ---
+
+# Top des Pays
 echo -e "\n${OR}=== RÉSUMÉ PAR PAYS ===${RESET}"
-
-# Traitement : suppression des lignes vides, tri, comptage et tri décroissant
-echo -e "$liste_pays_brute" | sed '/^$/d' | sort | uniq -c | sort -rn | while read total nom_pays; do
-    echo -e "${BLANC}$nom_pays : ${CYAN}$total${RESET}"
+echo -e "$liste_pays_brute" | sed '/^$/d' | sort | uniq -c | sort -rn | while read total nom; do
+    echo -e "${BLANC}$nom : ${CYAN}$total${RESET}"
 done
 
-echo -e "${OR}==========================================${RESET}"
+# Top des Ports (Nouveau)
+echo -e "\n${OR}=== TOP DES PORTS VISÉS ===${RESET}"
+if [ -n "$liste_ports_brute" ]; then
+    echo -e "$liste_ports_brute" | sed '/^$/d' | sort -n | uniq -c | sort -rn | while read total port; do
+        echo -e "${BLANC}Port $port : ${CYAN}$total${RESET}"
+    done
+else
+    echo -e "${BLANC}Aucune donnée de port trouvée dans les logs.${RESET}"
+fi
 
-# Pause avant de quitter et nettoyage de l'écran
+echo -e "${OR}============================================================${RESET}"
+
 read -p "    [Appuyer sur Entrée pour quitter]"
 clear
