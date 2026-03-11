@@ -24,9 +24,9 @@ for outil in figlet geoiplookup; do
     if ! command -v $outil &> /dev/null; then
         echo -e "${OR}[!] Outil manquant : $outil. Installation en cours...${RESET}"
         if [ "$outil" == "geoiplookup" ]; then
-            sudo apt-get update && sudo apt-get install geoip-bin -y &> /dev/null
+            apt-get update && apt-get install geoip-bin -y &> /dev/null
         else
-            sudo apt-get update && sudo apt-get install $outil -y &> /dev/null
+            apt-get update && apt-get install $outil -y &> /dev/null
         fi
     fi
 done
