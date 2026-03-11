@@ -1,7 +1,7 @@
 # GeoIP - IPSet Analyzer
 
 ![Bash](https://img.shields.io/badge/Language-Bash-4EAA25.svg)
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)
 ![Status](https://img.shields.io/badge/status-Libre-orange)
 
 **GeoIP** est un outil en ligne de commande permettant d'analyser et de géolocaliser instantanément toutes les adresses IP contenues dans une liste `ipset` (comme une liste de bannissement `Deny`). 
