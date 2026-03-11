@@ -20,6 +20,10 @@ Il génère un tableau coloré avec la provenance de chaque IP et fournit un ré
 
 <img width="595" height="551" alt="image" src="https://github.com/user-attachments/assets/bf6f913c-3ee3-49ee-95fa-4fc34eb251b3" />
 
+
+
+
+
 <img width="399" height="937" alt="image" src="https://github.com/user-attachments/assets/401504f1-3d7c-4679-b6e3-96f193c1a5ca" />
 
 ---
