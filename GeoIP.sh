@@ -42,7 +42,7 @@ fi
 echo -e "${OR}============================================================${RESET}"
 echo -e "${BLANC}   ANALYSE : ${LISTE_CIBLE} | SOURCE : ${LOG_FILE}${RESET}"
 echo -e "${OR}============================================================${RESET}"
-echo -e "${CYAN}Total d'adresses détectées : ${BLANC}$nb_ip${RESET}\n"
+echo -e "${CYAN}Total d'adresses : ${BLANC}$nb_ip${RESET}\n"
 
 # En-tête du tableau (3 colonnes maintenant)
 printf "${BLANC}%-18s | %-18s | %-10s${RESET}\n" "ADRESSE IP" "PAYS" "PORT VISÉ"
@@ -52,7 +52,7 @@ liste_pays_brute=""
 liste_ports_brute=""
 
 # Extraction des IPs
-ips_extraites=$( list "$LISTE_CIBLE" | tail -n "$nb_ip")
+ips_extraites=$(ipset list "$LISTE_CIBLE" | tail -n "$nb_ip")
 
 for adresse in $ips_extraites; do
     # 1. Géolocalisation
@@ -66,7 +66,7 @@ for adresse in $ips_extraites; do
 
     # Affichage
     printf "${CYAN}%-18s${RESET} | ${BLANC}%-18s${RESET} | ${OR}%-10s${RESET}\n" "$adresse" "$pays_detecte" "$port_detecte"
-
+    
     # Accumulation pour les stats
     liste_pays_brute+="$pays_detecte\n"
     [[ "$port_detecte" != "?" ]] && liste_ports_brute+="$port_detecte\n"
