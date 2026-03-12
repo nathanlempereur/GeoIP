@@ -21,7 +21,7 @@ RESET='\033[0m'
 for outil in figlet geoiplookup; do
     if ! command -v $outil &> /dev/null; then
         echo -e "${OR}[!] Outil manquant : $outil. Installation...${RESET}"
-        sudo apt-get update && sudo apt-get install geoip-bin figlet -y &> /dev/null
+        apt-get update && apt-get install geoip-bin figlet -y &> /dev/null
     fi
 done
 
@@ -52,7 +52,7 @@ liste_pays_brute=""
 liste_ports_brute=""
 
 # Extraction des IPs
-ips_extraites=$(ipset list "$LISTE_CIBLE" | tail -n "$nb_ip")
+ips_extraites=$( list "$LISTE_CIBLE" | tail -n "$nb_ip")
 
 for adresse in $ips_extraites; do
     # 1. Géolocalisation
